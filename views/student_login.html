@@ -1,0 +1,26 @@
+<!-- student_login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+</head>
+<body>
+  <h1>Student Login</h1>
+  
+  <div id="error">
+    <script>
+      // const error = '<%= typeof error !== "undefined" ? error : "" %>';
+      // if (error) {
+      //   document.getElementById('error').innerHTML = `<p style="color: red;">${error}</p>`;
+      // }
+    </script>
+  </div>
+
+  <form method="post" action="/student/login">
+    <label for="rollNo">Roll No:</label>
+    <input type="text" id="rollNo" name="rollNo" required>
+    <button type="submit">Login</button>
+  </form>
+  <a href="/home"><button>Go Back</button></a>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bg2.css">
+    <link rel="stylesheet" href="schedulestylesheet.css">
+  
+    <title>Book Slots</title>
+</head>
+
+<body>
+    <nav><a href="/professor/profile"><button>Go back</button></a></nav>
+    <div class="logo"><span><img src="Nitc_logo.png"> </span></div>
+
+    <form id="bookingForm" action="/professor/schedule" method="post" >
+        <div class="new">
+            <label for="" name="day">
+                <!--Day:-->
+                <div class="custom-select box1">
+                    <select name="day" id="day" required>
+                        <option value="" disbaled selected hidden> -Select Day- </option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                    </select>
+                </div>
+            </label>
+        
+            <label for="">
+                <!--Classroom:-->
+                <div class="custom-select box2">
+                    <select name="room" id="classroom" required>
+                        <option value="" disbaled selected hidden> -Select Classroom- </option>
+                    </select>
+                </div>
+            </label>
+            
+            <label for="">
+                <!--Branch and batch:-->
+                <div class="custom-select box3">
+                    <select name="batch" id="batch" required>
+                        <option value="" disbaled selected hidden> -Select Branch and Batch- </option>
+                        <!-- BATCH_OPTIONS -->
+                        <option value="">All students enrolled</option>
+                    </select>
+                </div>
+            </label>
+           
+            <br>
+            <br>
+            <label for="">
+                <!--Class Start Time:-->
+                <div class="custom-select box4">
+                    <select name="start" id="start" required>
+                        <option value="" disbaled selected hidden> -Select Start Time- </option>
+                        <option value="1">8:00</option>
+                        <option value="2">9:00</option>
+                        <option value="3">10:15</option>
+                        <option value="4">11:15</option>
+                        <option value="5">13:00</option>
+                        <option value="6">14:00</option>
+                        <option value="7">15:00</option>
+                        <option value="8">16:00</option>
+                    </select>
+                </div>
+            </label>
+           
+            <label for="">
+                <!--Class End Time:-->
+                <div class="custom-select box5">
+                    <select name="end" id="end" required>
+                        <option value="" disbaled selected hidden> -Select End Time- </option>
+                        
+                    </select>
+                </div>
+            </label>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    var startTimeSelect = document.getElementById("start");
+                    var endTimeSelect = document.getElementById("end");
+                    var errorMessage = document.getElementById("timeErrorMessage");
+            
+                    startTimeSelect.addEventListener("change", function () {
+                        endTimeSelect.disabled = false;
+                        endTimeSelect.innerHTML = '<option value="" disabled selected hidden> -Select End Time- </option>';
+                        var selectedStartTime = parseInt(startTimeSelect.value);
+                        for (var i = selectedStartTime + 1; i <= 10; i++) {
+                            var option = document.createElement("option");
+                            option.value = i.toString();
+                            if (i + 7 == 11 || i + 7 == 12) {
+                                option.textContent = (i + 7) + ":15";
+                            } else {
+                                option.textContent = (i + 7) + ":00";
+                            }
+                            endTimeSelect.appendChild(option);
+                        }
+                        errorMessage.textContent = "";
+                    });
+            
+                    endTimeSelect.addEventListener("click", function () {
+                        if (startTimeSelect.value === "") {
+                            alert("Please select a start time first.");
+                            endTimeSelect.blur(); 
+                        } else {
+                            errorMessage.textContent = "";
+                        }
+                    });
+                });
+            </script>
+        
+
+            <label for="">
+                <!--Course:-->
+                <div class="custom-select box6">
+                    <select name="course" id="courseSelect" required>
+                        <option value="" disbaled selected hidden> -Select Course- </option>
+                        
+                    </select>
+                </div>
+            </label>
+            <script>
+                // Script for Custom Dropdowns
+                // ...
+
+            </script>
+            <br>
+            <!-- Error 5 Display -->
+            
+            <br>
+        </div>
+        <style>
+           
+          
+        </style>
+        <!-- Table for Displaying Schedule -->
+        <center>
+            <justify>
+                <center><justify><table id="scheduleTable">
+                    <thead>
+                      <tr>
+                        <th>Day/Slot</th>
+                        <th>8-9 AM</th>
+                        <th>9-10 AM</th>
+                        <th>10:15-11:15 AM</th>
+                        <th>11:15-12:15 PM</th>
+                        <th>1-2 PM</th>
+                        <th>2-3 PM</th>
+                        <th>3-4 PM</th>
+                        <th>4-5 PM</th>
+                      </tr>
+                    </thead>
+                    <tbody id="scheduleBody"></tbody>
+                  </table>
+            </justify>
+        </center>
+        <center>
+            <div class="input__box">
+                <input type="submit" name="checktt" value="Check">
+            </div>
+        </center>
+    </form>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+  var bookingForm = document.getElementById("bookingForm");
+
+  bookingForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    var formData = new FormData(bookingForm);
+
+    fetch('/professor/schedule', {
+      method: 'POST',
+      body: formData,
+//       headers: {
+//     'Content-Type': 'multipart/form-data',
+//   },
+    })
+    .then(response => response.json())
+    .then(data => {
+
+      if (data.valid) {
+        window.location.href = '/professor/confirmation';
+      } else {
+        // Handle specific cases and show alerts
+        handleValidationErrors(data);
+      }
+    })
+    .catch(error => {
+      console.error('Error during form validation:', error);
+    });
+  });
+
+  function handleValidationErrors(data) {
+
+
+    if (data.errorCode === 1) {
+      alert(data.message);
+    } else if (data.errorCode === 2) {
+      alert(data.message);
+    } else if (data.errorCode === 3) {
+      alert(data.message);
+    } else {
+      
+    }
+  }
+});
+
+    </script>
+</body>
+</html>
