@@ -126,30 +126,33 @@ async function getclassroom()
 
 async function checkbookings(choice,prof_id)
 {
-  console.log(choice);
-
   const slot_id1=choice.start;
   const slot_id2=choice.end;
 
-  const obj1=await db.all('SELECT * FROM weeklytable WHERE day=? and slot_id>=? and slot_id<? and prof_id=?',[choice.day,slot_id1,slot_id2,prof_id]);
-  console.log(obj1);
-  if(obj1==[])
+  const obj1=await db.all('SELECT * FROM weeklytable WHERE day=? and slot_id>=? and slot_id<=? and prof_id=?',[choice.day,slot_id1,slot_id2,prof_id]);
+  // console.log(choice);
+  // console.log(slot_id1);
+  // console.log(slot_id2);
+  // console.log(obj1);
+  // console.log("obj1 length"+obj1.length);
+  if(obj1.length != 0)
     {
       return 1;
     }
 
   const obj2=await db.all('SELECT * FROM weeklytable WHERE day=? and slot_id>=? and slot_id<? and room_id=?',[choice.day,slot_id1,slot_id2,choice.room_id]);
-    if(obj2==[])
+    if(obj2.length != 0)
     {
       return 2;
     }
-  
+    // console.log("obj2 length"+obj2.length);
   const obj3=await db.all('SELECT * FROM weeklytable WHERE day=? and slot_id>=? and slot_id<? and batch_id=?',[choice.day,slot_id1,slot_id2,choice.batch]);
-    if(obj3==[])
+    if(obj3.length != 0)
     {
       return 3;
     }
-  
+    // console.log("obj3 length"+obj3.length);
+  return 0;
 }
 module.exports = {
   getStudentByrollno,

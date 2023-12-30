@@ -93,7 +93,8 @@
                             option.value = i.toString();
                             if (i + 7 == 11 || i + 7 == 12) {
                                 option.textContent = (i + 7) + ":15";
-                            } else {
+                            }
+                             else {
                                 option.textContent = (i + 7) + ":00";
                             }
                             endTimeSelect.appendChild(option);
@@ -165,48 +166,37 @@
     </form>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-  var bookingForm = document.getElementById("bookingForm");
-
-  bookingForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    var formData = new FormData(bookingForm);
-
-    fetch('/professor/schedule', {
-      method: 'POST',
-      body: formData,
-//       headers: {
-//     'Content-Type': 'multipart/form-data',
-//   },
-    })
-    .then(response => response.json())
-    .then(data => {
-
-      if (data.valid) {
-        window.location.href = '/professor/confirmation';
-      } else {
-        // Handle specific cases and show alerts
-        handleValidationErrors(data);
-      }
-    })
-    .catch(error => {
-      console.error('Error during form validation:', error);
+            var bookingForm = document.getElementById("bookingForm");
+            bookingForm.addEventListener("submit", function (event) {
+            // var formData = new FormData(bookingForm);
+            var formData = new FormData(bookingForm);
+            event.preventDefault();
+            var obj = Object.fromEntries(formData);
+            fetch('/professor/schedule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(obj)
+            })
+            .then(response => response.json())  // Parse the response as JSON
+             .then(data => {
+                if (data.errorCode === 1) {
+                    alert(data.message);
+                } else if (data.errorCode === 2) {
+                    alert(data.message);
+                } else if (data.errorCode === 3) {
+                    alert(data.message);
+                 }
+                 else  {
+                    window.location.href = 'https://www.google.com/';
+                    // window.location.href = 'professor/confirmation';
+                }
+        })
+        .catch(error => {
+            console.error('Error during form validation:', error);
+        });
     });
-  });
-
-  function handleValidationErrors(data) {
-
-
-    if (data.errorCode === 1) {
-      alert(data.message);
-    } else if (data.errorCode === 2) {
-      alert(data.message);
-    } else if (data.errorCode === 3) {
-      alert(data.message);
-    } else {
-      
-    }
-  }
 });
 
     </script>

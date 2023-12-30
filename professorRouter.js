@@ -3,6 +3,7 @@ const session = require('express-session');
 const path = require('path');
 const db = require('./db');
 const fs = require('fs');
+const app = express();
 const bodyParser = require('body-parser');
 // Create a new router object
 const router = express.Router();
@@ -19,6 +20,8 @@ router.use(session({
   }
 }));
 
+// router.use(bodyParser.json());
+router.use(express.json());
 // router.use(bodyParser.json()); 
 router.use(express.urlencoded({ extended: true }));
 
@@ -229,41 +232,44 @@ router.get('/schedule', async (req, res) => {
       });
 
 router.post('/schedule', async (req, res) => {
+  // console.log(req.session.user.prof_id)
   const obj=req.body;
-  console.log(obj);
-  const ans=await db.checkbookings(obj,req.session.prof_id);
-  // console.log(ans);
-//   try{if (ans === 1) {
-//     res.json({ errorCode: 1, message: "You already have a class at that time" });
-//   } else if (ans === 2) {
-//     res.json({ errorCode: 2, message: "Classroom is already booked" });
-//   } else if (ans === 3) {
-//     res.json({ errorCode: 3, message: "This batch has a class at that time" });
-//   } else {
-//     res.json({ valid: true });
-//   }
-// } catch (error) {
-//   console.error('Error during schedule validation:', error);
-//   res.status(500).json({ errorCode: 500, message: "Internal Server Error" });
-// }
-  // console.log("sfsfwffwfwf");
+  const prof_id=req.session.user.prof_id;
+  try{
+    const ans=await db.checkbookings(obj,prof_id);
+    // console.log("anser is "+ans);
+    if (ans == 1) {
+      res.json({ errorCode: 1, message: "You already have a class at that time" });
+    } else if (ans == 2) {
+      res.json({ errorCode: 2, message: "Classroom is already booked" });
+    } else if (ans == 3) {
+      res.json({ errorCode: 3, message: "This batch has a class at that time" });
+    } else {
+      // res.redirect('/professor/confirmation');
+      res.json({ valid: true });
+    }
+} catch (error) {
+  console.error('Error during schedule validation:', error);
+  res.status(500).json({ errorCode: 500, message: "Internal Server Error" });
+}
 })
-router.post('/confirmation',async (req, res) => {
-  const obj=req.body;
-  const filePath = path.join(__dirname, 'views', 'confirmaion.html');
-  try {
-    
-    const { day, room, batch, start, end, course } = req.body;
 
-    
-   
+
+router.post('/confirmation', async (req, res) => {
+  console.log("confirmation page is being open");
+  const obj = req.body;
+  console.log(obj);
+  const filePath = path.join(__dirname, 'views', 'confirmation.html');
+  try {
+    const { day, room, batch, start, end, course } = req.body;
     console.log(obj);
+    // Handle the data as needed
   } catch (error) {
     console.error('Error handling professor confirmation:', error);
     res.status(500).send('Internal Server Error');
   }
+});
 
-})
 router.get('/deschedule', async (req, res) => {
 
 })
