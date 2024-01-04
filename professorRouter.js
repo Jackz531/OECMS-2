@@ -5,10 +5,9 @@ const db = require('./db');
 const fs = require('fs');
 const app = express();
 const bodyParser = require('body-parser');
-// Create a new router object
+
 const router = express.Router();
 
-// Use the session middleware
 router.use(session({
   secret: 'some random string', 
   saveUninitialized: false,
@@ -20,14 +19,13 @@ router.use(session({
   }
 }));
 
-// router.use(bodyParser.json());
 router.use(express.json());
-// router.use(bodyParser.json()); 
+
 router.use(express.urlencoded({ extended: true }));
 
 
 function isAuthenticated(req, res, next) {
-  // console.log(req.session.user);
+
   if (req.session && req.session.user) {
     console.log('User is authenticated.');
     next();
@@ -37,7 +35,6 @@ function isAuthenticated(req, res, next) {
   }
 }
 
-// Define the routes using router.METHOD()
 router.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'professor_login.html'));
 });
@@ -45,19 +42,15 @@ router.get('/login', (req, res) => {
 router.post('/login', async (req, res) => {
   const username = req.body.username;
   const pwd=req.body.password;
-  // console.log(username);
-  // console.log(pwd);
   try {
     const professor = await db.getProfessor(username,pwd);
     
-    if (professor) {
-      // Login successful, store the user object in the session
-      
+    if (professor)
+    {
       req.session.user = { firstname:professor.first_name,second_name:professor.second_name,prof_id:professor.prof_id};
-      // console.log(req.session.user );
       res.redirect('/professor/profile');
-    } else {
-      // Login failed, set the error message in the session
+    } else 
+    {
       req.session.error = 'Invalid roll number';
       res.redirect('/professor/login');
     }
@@ -67,9 +60,6 @@ router.post('/login', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
-
-// Use the isAuthenticated middleware for the /professor route
 
 router.get('/profile', isAuthenticated, async (req, res) => {
   professor=req.session.user;
@@ -90,10 +80,8 @@ router.get('/profile', isAuthenticated, async (req, res) => {
         });
   });
 
-
 router.get('/choose_class', async (req, res) => {
   const prof_id = req.session.user.prof_id;
-  
   try{
       const batch= await db.getBranch_and_Batch(prof_id);
       const filePath = path.join(__dirname, 'views', 'choose_class.html');
@@ -111,14 +99,11 @@ router.get('/choose_class', async (req, res) => {
     console.error('Error fetching profile data:', error);
     res.status(500).send('Internal Server Error');
   }
-  
 
   })
 router.get('/prof_tt', async (req, res) => {
   const prof_id = req.session.user.prof_id;
-  // console.log(prof_id);
   try{
-    
     const schedule=await db.get_prof_tt(prof_id);
     const scheduleTable = scheduleToHtmlTable(schedule);
     const filePath = path.join(__dirname, 'views', 'prof_tt.html');
@@ -134,12 +119,7 @@ router.get('/prof_tt', async (req, res) => {
         scheduleBody.innerHTML = ${JSON.stringify(scheduleTable)};
       </script>
     `;
-  
-    
-    // Replace placeholders in the HTML file
     const modifiedHtml = data.replace('</body>', injectedData + '</body>');
-  
-    // Send the modified HTML file
     res.send(modifiedHtml);
   });
   
@@ -162,18 +142,13 @@ router.post('/student_tt', async (req, res) => {
         return res.status(500).send('Internal Server Error');
       }
   
-    // Inject data into the HTML file using a script
     const injectedData = `
       <script>
         var scheduleBody = document.getElementById('scheduleBody');
         scheduleBody.innerHTML = ${JSON.stringify(scheduleTable)};
       </script>
     `;
-  
-    // Replace placeholders in the HTML file
     const modifiedHtml = data.replace('</body>', injectedData + '</body>');
-  
-    // Send the modified HTML file
     res.send(modifiedHtml);
   });
   } catch (error) {
@@ -189,8 +164,6 @@ router.get('/schedule', async (req, res) => {
     const batch= await db.getBranch_and_Batch(prof_id);
     const course=await db.getcourse_prof(prof_id);
     const classroom=await db.getclassroom();
-    // console.log('Course data:', course);
-    // console.log(classroom);
     const b_options = batch.map(b => `<option value="${b.batch_id}">${b.department}   ${b.batch}   ${b.semester}</option>`);
     const options = course.map(c=> `<option value="${c.course_id}">${c.course_id} ${c.course_name} </option>`);
     const cls = classroom.map(d=> `<option value="${d.room_id}"> ${d.building} ${d.room} </option>`);
@@ -202,7 +175,6 @@ router.get('/schedule', async (req, res) => {
         console.error('Error reading HTML file:', err);
         return res.status(500).send('Internal Server Error');
       }
-      // const injectedHTML = injectBatchData(data, batch);
       const injectedData = `
       <script>
         var scheduleBody = document.getElementById('scheduleBody');
@@ -219,11 +191,7 @@ router.get('/schedule', async (req, res) => {
 
       </script>
     `;
-  
-    // Replace placeholders in the HTML file
     const modifiedHtml = data.replace('</body>', injectedData + '</body>');
-  
-    // Send the modified HTML file
     res.send(modifiedHtml); })}
     catch (error) {
       console.error('Error fetching schedule data:', error);
@@ -232,20 +200,20 @@ router.get('/schedule', async (req, res) => {
       });
 
 router.post('/schedule', async (req, res) => {
-  // console.log(req.session.user.prof_id)
   const obj=req.body;
+  // console.log(obj);
   const prof_id=req.session.user.prof_id;
   try{
     const ans=await db.checkbookings(obj,prof_id);
-    // console.log("anser is "+ans);
+
     if (ans == 1) {
       res.json({ errorCode: 1, message: "You already have a class at that time" });
     } else if (ans == 2) {
       res.json({ errorCode: 2, message: "Classroom is already booked" });
     } else if (ans == 3) {
       res.json({ errorCode: 3, message: "This batch has a class at that time" });
-    } else {
-      // res.redirect('/professor/confirmation');
+    } else 
+    {
       res.json({ valid: true });
     }
 } catch (error) {
@@ -254,31 +222,45 @@ router.post('/schedule', async (req, res) => {
 }
 })
 
-
 router.post('/confirmation', async (req, res) => {
   console.log("confirmation page is being open");
   const obj = req.body;
-  console.log(obj);
+  const ans=await db.get_clashes(obj);
+
   const filePath = path.join(__dirname, 'views', 'confirmation.html');
-  try {
-    const { day, room, batch, start, end, course } = req.body;
-    console.log(obj);
-    // Handle the data as needed
-  } catch (error) {
-    console.error('Error handling professor confirmation:', error);
-    res.status(500).send('Internal Server Error');
-  }
+    try {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading HTML file:', err);
+        return res.status(500).send('Internal Server Error');
+      }
+      const injectedData = `
+      <script>
+        var clashes = document.getElementById('clash');
+        clashes.innerHTML = '${ans[0].length} out of ${ans[1].length} students have clashes.';
+      </script>`;
+
+    const modifiedHtml = data.replace('</body>', injectedData + '</body>');
+    res.send(modifiedHtml);
+  });
+} catch (error) {
+  console.error('Error fetching schedule data:', error);
+  res.status(500).send('Internal Server Error');
+}
+
+})
+
+router.post('/updatetime', async (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'professor_profile.html'));
 });
 
 router.get('/deschedule', async (req, res) => {
-
 })
-// Helper function to convert schedule data to HTML table
+
 function scheduleToHtmlTable(schedule) {
-  // console.log(schedule);
+
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const tableRows = [];
-
   days.forEach(day => {
     const row = [`<th class="days">${day}</th>`];
 
@@ -290,18 +272,12 @@ function scheduleToHtmlTable(schedule) {
         row.push('<td class="t2"><br>-<br></td>');
       }
     }
-
     tableRows.push(`<tr>${row.join('')}</tr>`);
   });
-
   return `<table id="scheduleTable"><tbody>${tableRows.join('')}</tbody></table>`;
 }
 
-
-// Define the logout route
-
 router.get('/logout', (req, res) => {
-  // Destroy the session and clear the cookie
   req.session.destroy((err) => {
     if (err) {
       console.error('Error during logout:', err);
@@ -309,7 +285,6 @@ router.get('/logout', (req, res) => {
     } else {
      
       res.clearCookie('auth'); 
-      
       res.redirect('/professor/login');
     }
   });
@@ -317,13 +292,8 @@ router.get('/logout', (req, res) => {
 
 function injectBatchData(html, batch) {
   const placeholder = '<!-- BATCH_OPTIONS -->';
-  
-  // Generate options based on batch data
   const options = batch.map(b => `<option value="${b.batch_id}">${b.department} - ${b.batch} - ${b.semester}</option>`);
-
-  // Replace the placeholder with the generated options
   const modifiedHTML = html.replace(placeholder, options.join(''));
-  
   return modifiedHTML;
 }
 

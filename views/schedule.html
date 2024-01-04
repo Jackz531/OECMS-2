@@ -14,7 +14,7 @@
     <nav><a href="/professor/profile"><button>Go back</button></a></nav>
     <div class="logo"><span><img src="Nitc_logo.png"> </span></div>
 
-    <form id="bookingForm" action="/professor/schedule" method="post" >
+    <form id="bookingForm" action="/professor/confirmation" method="post" >
         <div class="new">
             <label for="" name="day">
                 <!--Day:-->
@@ -189,7 +189,8 @@
                     alert(data.message);
                  }
                  else  {
-                    window.location.href = 'https://www.google.com/';
+                    bookingForm.submit();
+                    form.submit;
                     // window.location.href = 'professor/confirmation';
                 }
         })

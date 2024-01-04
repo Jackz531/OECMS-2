@@ -1,11 +1,11 @@
-// db.js
+
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const { use } = require('./studentRouter');
 
 let db;
 
-// Connect to SQLite database
+
 open({
   filename: './extra_class.db', // Specify the path to your SQLite database file
   driver: sqlite3.Database
@@ -15,7 +15,7 @@ open({
   console.error('Error opening database:', err);
 });
 
-// Function to retrieve  student details
+
 async function getStudentByrollno(rollno) {
   try {
     const student = await db.get('SELECT * FROM student where roll_no=?',[rollno]);
@@ -154,8 +154,54 @@ async function checkbookings(choice,prof_id)
     // console.log("obj3 length"+obj3.length);
   return 0;
 }
-module.exports = {
-  getStudentByrollno,
+async function get_clashes(choice)
+{
+  console.log("batch is "+choice.batch);
+  console.log("start is "+choice.start);
+  console.log("end is "+choice.end);
+  // const ans1 = await db.all("select s.roll_no, s.first_name, s.second_name from student as s, enrolments as e where e.roll_no = s.roll_no and e.course_id = ? and s.batch_id = case when ? = 0 then s.batch_id else ? end;", [choice.course, choice.batch.length, choice.batch]);
+ 
+ 
+  const ans2 = await db.all(`
+    SELECT s.roll_no, s.first_name, s.second_name
+    FROM student AS s
+    JOIN enrolments AS e ON e.roll_no = s.roll_no
+    JOIN weeklytable AS w ON e.course_id = w.course_id
+    WHERE
+        w.day = ? AND
+        w.slot_id >= ? AND
+        w.slot_id < ? AND
+        (
+            w.batch_id = s.batch_id OR
+            w.batch_id IS NULL
+        )
+    AND EXISTS (
+        SELECT 1
+        FROM enrolments AS e2
+        WHERE
+            e2.roll_no = s.roll_no AND
+            e2.course_id = ? AND
+            (
+                s.batch_id = ? OR
+                ? IS NULL OR
+                ? = ''
+            )
+    );
+`, [choice.day, choice.start, choice.end, choice.course, choice.batch, choice.batch, choice.batch]);
+
+const ans1 = await db.all(
+  "SELECT s.roll_no, s.first_name, s.second_name FROM student AS s, enrolments AS e WHERE e.roll_no = s.roll_no AND e.course_id = ? AND s.batch_id = CASE WHEN ? = 0 THEN s.batch_id ELSE ? END;",
+  [choice.course, choice.batch.length, choice.batch]
+);
+
+console.log(ans2);
+console.log("no of clashed rows:", ans2.length);
+console.log("total Number of students:", ans1.length);
+console.log(ans1);
+return [ans2,ans1];
+}
+module.exports = 
+  {getStudentByrollno,
   getProfessor,
   getStudentSchedule,
   getBranch_and_Batch,
@@ -164,6 +210,6 @@ module.exports = {
   getcourse_prof,
   getclassroom,
   checkbookings,
-
+  get_clashes,
 };
 
