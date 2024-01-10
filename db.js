@@ -222,6 +222,11 @@ async function update_dbdata(obj, prof_id) {
   }
 }
 
+async function delete_dbdata(obj, prof_id) {
+  console.log(obj.day);
+  const query = "DELETE FROM weeklytable WHERE day = ? and slot_id = ? and prof_id = ?";
+  await db.run(query, [obj.day, obj.slot_id, prof_id]);
+}
 module.exports = 
   { 
     getStudentByrollno,
@@ -235,5 +240,6 @@ module.exports =
     checkbookings,
     get_clashes,
     update_dbdata,
+    delete_dbdata,
 };
 

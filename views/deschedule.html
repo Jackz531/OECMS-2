@@ -8,22 +8,69 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="bg2.css">
     <link rel="stylesheet" href="tt.css">
-    <script type="text/javascript">
-        // JavaScript functions here
-    </script>
 </head>
 <body onload="onload()">
     <nav>
         <ul>
-            <li style="font-family: 'Poppins', sans-serif"><a href='functions.php'> &laquo; Back</a></li>
+            <li style="font-family: 'Poppins', sans-serif"><a href='/professor/profile'> &laquo; Back</a></li>
         </ul>
     </nav>
     <div class="logo"><span><img src="Nitc_logo.png"> </span></div>
     <center>
-        <form action="" method="post">
-            <!-- PHP and form elements here -->
+        <form id="descheduleForm" action="/professor/deschedule" method="post">
+            <body>
+                <center>
+                    <justify>
+                        <table id="scheduleTable">
+                            <thead>
+                                <tr>
+                                    <th>Day/Slot</th>
+                                    <th>8-9 AM</th>
+                                    <th>9-10 AM</th>
+                                    <th>10:15-11:15 AM</th>
+                                    <th>11:15-12:15 PM</th>
+                                    <th>1-2 PM</th>
+                                    <th>2-3 PM</th>
+                                    <th>3-4 PM</th>
+                                    <th>4-5 PM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleBody"></tbody>
+                        </table>
+                    </justify>
+                </center>
+                <input type="submit" value="Submit">
+            </body>
         </form>
-     
     </center>
+
+    <script type="text/javascript">
+       document.getElementById('descheduleForm').addEventListener('submit', function (event) {
+  const selectedCheckboxes = document.querySelectorAll('input[name="courseCheckbox"]:checked');
+  const selectedCourseIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+  event.preventDefault();
+
+  fetch('/professor/deschedule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ courseIds: selectedCourseIds }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert(data.message);
+
+    // Reload the page after successful descheduling
+    if (data.success) {
+      location.reload();
+    }
+  })
+  .catch(error => {
+    console.error('Error submitting data:', error);
+  });
+});
+
+    </script>
 </body>
 </html>

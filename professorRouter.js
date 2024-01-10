@@ -277,7 +277,94 @@ router.post('/updatetime', async (req, res) => {
 });
 
 router.get('/deschedule', async (req, res) => {
+  const prof_id = req.session.user.prof_id;
+  try{
+    const schedule=await db.get_prof_tt(prof_id);
+    const scheduleTable = scheduleToHtmlTablecheckbox(schedule);
+    const filePath = path.join(__dirname, 'views', 'deschedule.html');
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading HTML file:', err);
+        return res.status(500).send('Internal Server Error');
+      }
+      const injectedData = `
+      <script>
+        var scheduleBody = document.getElementById('scheduleBody');
+        scheduleBody.innerHTML = ${JSON.stringify(scheduleTable)};
+      </script>
+    `;
+    const modifiedHtml = data.replace('</body>', injectedData + '</body>');
+    res.send(modifiedHtml);
+  });
+  
+  }catch (error) {
+  console.error('Error fetching professor time table:', error);
+  res.status(500).send('Internal Server Error');
+  }
+
 })
+
+router.post('/deschedule', async (req, res) => {
+  const prof_id = req.session.user.prof_id;
+  const slot = req.body.courseIds;
+  
+  
+
+  try {
+        let i = 0;
+        while (i < slot.length) {
+          let parts = slot[i].split("-");
+          let obj = {
+            day: parts[0],
+            slot_id: parts[1]
+          };
+          await db.delete_dbdata(obj, prof_id);
+          i++;
+        }
+       res.json({ success: true, message: 'Courses descheduled successfully.' });
+      } catch (error) {
+        console.error('Error descheduling courses:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+      }
+    });
+
+function scheduleToHtmlTablecheckbox(schedule) {
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const tableRows = [];
+
+  days.forEach(day => {
+    const row = [`<th class="days">${day}</th>`];
+
+    for (let slot = 1; slot <= 8; slot++) {
+      const slotData = schedule.find(item => item.day === day && item.slot_id === slot);
+      if (slotData) {
+        // If slotData exists, create a checkbox with course_id as its value
+        row.push(`
+          <td class="t1">
+            <center>
+              <input type="checkbox" name="courseCheckbox" value="${slotData.day}-${slotData.slot_id}">
+              ${slotData.course_id}<br>${slotData.building} ${slotData.room}
+            </center>
+          </td>
+        `);
+      } else {
+        
+        row.push(`
+          <td class="t2">
+            <center>
+              <br>-
+              <br>
+            </center>
+          </td>
+        `);
+      }
+    }
+    tableRows.push(`<tr>${row.join('')}</tr>`);
+  });
+
+  return `<table id="scheduleTable"><tbody>${tableRows.join('')}</tbody></table>`;
+}
 
 function scheduleToHtmlTable(schedule) {
 
