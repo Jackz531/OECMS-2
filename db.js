@@ -140,8 +140,9 @@ async function checkbookings(choice,prof_id)
       return 1;
     }
 
-  const obj2=await db.all('SELECT * FROM weeklytable WHERE day=? and slot_id>=? and slot_id<? and room_id=?',[choice.day,slot_id1,slot_id2,choice.room_id]);
-    if(obj2.length != 0)
+  const obj2=await db.all('SELECT * FROM weeklytable WHERE day=? and slot_id>=? and slot_id<=? and room_id=?',[choice.day,slot_id1,slot_id2,choice.room]);
+  console.log(obj2);
+  if(obj2.length != 0)
     {
       return 2;
     }
@@ -156,10 +157,10 @@ async function checkbookings(choice,prof_id)
 }
 async function get_clashes(choice)
 {
-  console.log("batch is "+choice.batch);
-  console.log("start is "+choice.start);
-  console.log("end is "+choice.end);
-  // const ans1 = await db.all("select s.roll_no, s.first_name, s.second_name from student as s, enrolments as e where e.roll_no = s.roll_no and e.course_id = ? and s.batch_id = case when ? = 0 then s.batch_id else ? end;", [choice.course, choice.batch.length, choice.batch]);
+  // console.log("batch is "+choice.batch);
+  // console.log("start is "+choice.start);
+  // console.log("end is "+choice.end);
+  const ans1 = await db.all("select s.roll_no, s.first_name, s.second_name from student as s, enrolments as e where e.roll_no = s.roll_no and e.course_id = ? and s.batch_id = case when ? = 0 then s.batch_id else ? end;", [choice.course, choice.batch.length, choice.batch]);
  
  
   const ans2 = await db.all(`
@@ -189,27 +190,50 @@ async function get_clashes(choice)
     );
 `, [choice.day, choice.start, choice.end, choice.course, choice.batch, choice.batch, choice.batch]);
 
-const ans1 = await db.all(
-  "SELECT s.roll_no, s.first_name, s.second_name FROM student AS s, enrolments AS e WHERE e.roll_no = s.roll_no AND e.course_id = ? AND s.batch_id = CASE WHEN ? = 0 THEN s.batch_id ELSE ? END;",
-  [choice.course, choice.batch.length, choice.batch]
-);
-
-console.log(ans2);
-console.log("no of clashed rows:", ans2.length);
-console.log("total Number of students:", ans1.length);
-console.log(ans1);
 return [ans2,ans1];
 }
+
+async function update_dbdata(obj, prof_id) {
+  // console.log(obj);
+  if (obj.batch.length > 0) {
+    if (obj.end - obj.start === 1) {
+      await db.all("INSERT INTO weeklytable(day, slot_id, batch_id, course_id, prof_id, room_id) VALUES (?, ?, ?, ?, ?, ?)",
+        [obj.day, obj.start, obj.batch, obj.course, prof_id, obj.room]);
+    } else {
+      var i = obj.start;
+      while (i < obj.end) {
+        await db.all("INSERT INTO weeklytable(day, slot_id, batch_id, course_id, prof_id, room_id) VALUES (?, ?, ?, ?, ?, ?)",
+          [obj.day, i, obj.batch, obj.course, prof_id, obj.room]);
+        i += 1;
+      }
+    }
+  } else {
+    if (obj.end - obj.start === 1) {
+      await db.all("INSERT INTO weeklytable(day, slot_id, course_id, prof_id, room_id) VALUES (?, ?, ?, ?, ?)",
+        [obj.day,obj.start, obj.course, prof_id, obj.room]);
+    } else {
+      var i = obj.start;
+      while (i < obj.end) {
+        await db.all("INSERT INTO weeklytable(day, slot_id, course_id, prof_id, room_id) VALUES (?, ?, ?, ?, ?)",
+          [obj.day, i, obj.course, prof_id, obj.room]);
+        i += 1;
+      }
+    }
+  }
+}
+
 module.exports = 
-  {getStudentByrollno,
-  getProfessor,
-  getStudentSchedule,
-  getBranch_and_Batch,
-  get_tt,
-  get_prof_tt,
-  getcourse_prof,
-  getclassroom,
-  checkbookings,
-  get_clashes,
+  { 
+    getStudentByrollno,
+    getProfessor,
+    getStudentSchedule,
+    getBranch_and_Batch,
+    get_tt,
+    get_prof_tt,
+    getcourse_prof,
+    getclassroom,
+    checkbookings,
+    get_clashes,
+    update_dbdata,
 };
 

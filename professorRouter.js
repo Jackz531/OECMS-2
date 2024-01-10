@@ -4,9 +4,12 @@ const path = require('path');
 const db = require('./db');
 const fs = require('fs');
 const app = express();
+const he = require('he');
 const bodyParser = require('body-parser');
 
 const router = express.Router();
+
+router.use(express.static(path.join(__dirname, 'views')));
 
 router.use(session({
   secret: 'some random string', 
@@ -234,11 +237,18 @@ router.post('/confirmation', async (req, res) => {
         console.error('Error reading HTML file:', err);
         return res.status(500).send('Internal Server Error');
       }
+      // console.log(ans[0]);
+      const studentsHTML = ans[0].map(student => `${he.encode(`${student.roll_no} ${student.first_name} ${student.second_name}`)}<br>`).join('');
+      req.session.weeklyTableData =req.body;
+      // console.log(req.session.weeklyTableData);
       const injectedData = `
       <script>
         var clashes = document.getElementById('clash');
-        clashes.innerHTML = '${ans[0].length} out of ${ans[1].length} students have clashes.';
+        clashes.innerHTML = '${he.encode(`${ans[0].length} out of ${ans[1].length} students have clashes.`)}';
+        var student=document.getElementById('student');
+        student.innerHTML = '${studentsHTML}';
       </script>`;
+      
 
     const modifiedHtml = data.replace('</body>', injectedData + '</body>');
     res.send(modifiedHtml);
@@ -251,7 +261,19 @@ router.post('/confirmation', async (req, res) => {
 })
 
 router.post('/updatetime', async (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'professor_profile.html'));
+  const obj = req.session.weeklyTableData;
+  // console.log(obj);
+  prof_id=req.session.user.prof_id;
+  try{
+    ans=db.update_dbdata(obj,prof_id);
+  }catch(error) {
+    console.error('Error fetching updating database:', error);
+    res.status(500).send('Internal Server Error');
+  }
+  
+  // res.sendFile(path.join(__dirname, 'views', 'professor_profile.html'));
+  res.redirect('/professor/profile');
+  
 });
 
 router.get('/deschedule', async (req, res) => {

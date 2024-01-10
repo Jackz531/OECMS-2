@@ -7,6 +7,7 @@ const path = require('path');
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'home.html'));
 });
+app.use(express.static(path.join(__dirname, 'views')));
 // Use the studentRouter as middleware on the /student path
 const studentRouter = require('./studentRouter');
 app.use('/student', studentRouter);

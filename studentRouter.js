@@ -6,7 +6,7 @@ const fs = require('fs');
 
 // Create a new router object
 const router = express.Router();
-
+router.use(express.static(path.join(__dirname, 'views')));
 // Use the session middleware
 router.use(session({
   secret: 'some random string', 

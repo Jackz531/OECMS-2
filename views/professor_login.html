@@ -1,5 +1,5 @@
-<!-- professor-login.ejs -->
-<!DOCTYPE html>
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -19,5 +19,67 @@
    
   </form>
   <a href="/home"><button>Go Back</button></a>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="bg.css">
+    <!-- Add any additional stylesheets as needed for the new page -->
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="background">
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+        </div>
+
+        <header>
+            <nav>
+                <ul>
+                    <li><a href='/home'> &laquo Home</a></li>
+                </ul>
+            </nav>
+
+            <div class="logo">
+                <span>
+                    <img src="Nitc_logo.png" alt="Nitc Logo">
+                </span>
+            </div>
+
+            <section class="header-content">
+                <h1>Professor Login</h1>
+            </section>
+
+            <div class="glass-panel">
+                <div class="form">
+                    <form method="post" action="/professor/login">
+                        <div class="input__box">
+                            
+                            <input type="text" id="username" name="username"  placeholder="Username" required>
+                        </div>
+                        <div class="input__box">
+                            
+                            <input type="password" id="password" name="password" placeholder="Password"  required>
+                        </div>
+                      
+                        
+                        <div class="input__box">
+                          <input type="submit" name ="login" value="Login" />
+                  </div>
+                    </form>
+                </div>
+            </div>
+        </header>
+    </div>
+    <!-- Add any additional scripts or other content as needed -->
 </body>
 </html>

@@ -1,14 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-</head>
-<body>
-  <h1>Welcome to the Application</h1>
-  <p>Are  student or a professor?</p>
-  <a href="/student/login">Student</a>
-  <a href="/professor/login">Professor</a>
-</body>
+    <head>
+        <link rel="stylesheet" href="wel.css">
+        <meta charset="UTF-8">
+        <script src="https://kit.fontawesome.com/faeaa9a8c9.js" crossorigin="anonymous"></script>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel = "stylesheet" href = "style.css">
+        <title>Document</title>
+        <style>
+            .fa-solid{
+                font-size: 150pt;
+                color: #000000; 
+            }
+            .flex-child {
+              padding: 30px;
+              border: 1px ;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+          <a href="#default" class="logo"><span><img src="Nitc_logo.png"> </span>Online Extra Class Management System</a>
+        </div>
+
+        <div class="boody">
+        
+        <div class="flex-container">
+        
+          <div onclick="window.location.href='/student/login';" class="flex-child magenta">
+          <img src="stud.png" class="stud">
+          <center>
+            <section class="header-content">
+                
+                    <button onclick="window.location.href='/student/login';">Student</button>
+                
+
+            </section>
+            </center>
+          </div>
+          
+          <div onclick="window.location.href='/professor/login';" class="flex-child green">
+          <img src="prof.png" class="stud">
+            <center>
+                <section class="header-content">
+            <button onclick="window.location.href='/professor/login';">Professor</button>
+              </section>
+            </center>
+          </div>
+          
+        </div>
+        
+        </div>
+        </div> 
+      </body>
 </html>

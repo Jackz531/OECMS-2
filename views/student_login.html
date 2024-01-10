@@ -1,18 +1,61 @@
-<!-- student_login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bg.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <title>Student Login</title>
+    <!-- Add any additional stylesheets as needed for the new page -->
 </head>
 <body>
-  <h1>Student Login</h1>
+    <div class="container-fluid">
+        <div class="background">
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+        </div>
 
+        <header>
+            <nav>
+                <ul>
+                    <li><a href='/home'> &laquo Home</a></li>
+                </ul>
+            </nav>
 
-  <form method="post" action="/student/login">
-    <label for="rollNo">Roll No:</label>
-    <input type="text" id="rollNo" name="rollNo" required>
-    <button type="submit">Login</button>
-  </form>
-  <a href="/home"><button>Go Back</button></a>
+            <div class="logo">
+                <span>
+                    <img src="Nitc_logo.png" alt="Nitc Logo">
+                </span>
+            </div>
+
+            <section class="header-content">
+                <h1>Student Login</h1>
+            </section>
+
+            <div class="glass-panel">
+                <div class="form">
+                    <form method="post" action="/student/login">
+                        <div class="input__box">
+                            
+                            <input type="text" id="rollNo" name="rollNo"  placeholder="Roll Number" required>
+                        </div>
+                        <div class="input__box">
+                          <br>
+                          <center>
+                              <input type="submit" name="checktt"value="Login" class="inp_butt"/>    
+                          </center>
+                      </div>  
+                    </form>
+                </div>
+            </div>
+        </header>
+    </div>
+    <!-- Add any additional scripts or other content as needed -->
 </body>
 </html>
