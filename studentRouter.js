@@ -72,6 +72,9 @@ router.get('/profile', isAuthenticated, async (req, res) => {
   try {
     const student = req.session.user;
     const schedule = await db.getStudentSchedule(student);
+    const courses=await db.getcourseinfo(student);
+
+    // console.log(courses);
     console.log('Rendering student_profile.html...');
     const filePath = path.join(__dirname, 'views', 'student_profile.html');
 
@@ -84,18 +87,20 @@ router.get('/profile', isAuthenticated, async (req, res) => {
 
       // Create the schedule table HTML
       const scheduleTable = scheduleToHtmlTable(schedule);
-
-      // Inject data into the HTML file using a script
-      const injectedData = `
-        <script>
-          var profileData = ${JSON.stringify({ student, schedule })};
-          document.getElementById('studentName').innerText = profileData.student.firstname + ' ' + profileData.student.second_name;
-          document.getElementById('rollNo').innerText = profileData.student.rollNo;
-          var scheduleBody = document.getElementById('scheduleBody');
-          scheduleBody.innerHTML = ${JSON.stringify(scheduleTable)};
-        </script>
-      `;
-
+      
+      const courseTable =  coursesToHtmlTable(courses);
+      console.log(courseTable);
+// Inject data into the HTML file using a script
+const injectedData = `
+    <script>
+        var profileData = ${JSON.stringify({ student})};
+        document.getElementById('studentName').innerText = profileData.student.firstname + ' ' + profileData.student.second_name;
+        var scheduleBody = document.getElementById('scheduleBody');
+        scheduleBody.innerHTML = ${JSON.stringify(scheduleTable)};
+        var coursesTable = document.getElementById('course');
+        coursesTable.innerHTML = ${JSON.stringify(courseTable)};
+    </script>
+`;
       // Replace placeholders in the HTML file
       const modifiedHtml = data.replace('</body>', injectedData + '</body>');
 
@@ -133,6 +138,16 @@ function scheduleToHtmlTable(schedule) {
 }
 
 
+function coursesToHtmlTable(courses) {
+  let tableRows = '';
+
+  for (let i = 0; i < courses.length; i++) {
+    const course = courses[i];
+    tableRows += `<tr><td class="t3">${course.course_id}</td><td class="t3">${course.course_name}</td></tr>`;
+  }
+
+  return `<table id="courseTable"><tbody>${tableRows}</tbody></table>`;
+}
 
 
 router.get('/logout', (req, res) => {

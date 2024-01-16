@@ -4,42 +4,48 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>OECMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="bg2.css">
     <link rel="stylesheet" href="tt.css">
 </head>
+
 <body onload="onload()">
     <nav>
         <ul>
-            <li style="font-family: 'Poppins', sans-serif"><a href='/professor/profile'> &laquo; Back</a></li>
-        </ul>
-    </nav>
-    <div class="logo"><span><img src="Nitc_logo.png"> </span></div>
+          <li style="font-family: 'Poppins', sans-serif" ><a href='/professor/profile'> &laquo Back</a></li>
+         </ul>
+       </nav>
+    <!-- logo -->
+          <div class="logo"><span><img src="Nitc_logo.png"> </span></div>
+    
     <center>
         <form id="descheduleForm" action="/professor/deschedule" method="post">
             <body>
                 <center>
                     <justify>
-                        <table id="scheduleTable">
+                        <table id="scheduleTable" class='table1'cellspacing=0 cellpadding=0>
                             <thead>
                                 <tr>
-                                    <th>Day/Slot</th>
-                                    <th>8-9 AM</th>
-                                    <th>9-10 AM</th>
-                                    <th>10:15-11:15 AM</th>
-                                    <th>11:15-12:15 PM</th>
-                                    <th>1-2 PM</th>
-                                    <th>2-3 PM</th>
-                                    <th>3-4 PM</th>
-                                    <th>4-5 PM</th>
+                                    <th class="days">Day/Slot</th>
+                                    <th class="days">8-9 AM</th>
+                                    <th class="days">9-10 AM</th>
+                                    <th class="days">10:15-11:15 AM</th>
+                                    <th class="days">11:15-12:15 PM</th>
+                                    <th class="days">1-2 PM</th>
+                                    <th class="days">2-3 PM</th>
+                                    <th class="days">3-4 PM</th>
+                                    <th class="days">4-5 PM</th>
                                 </tr>
                             </thead>
                             <tbody id="scheduleBody"></tbody>
                         </table>
                     </justify>
                 </center>
-                <input type="submit" value="Submit">
+                <br>
+                <div class="input_box">
+                <input type="submit" name="checktt" value="Deschedule">
+                    </div>
             </body>
         </form>
     </center>

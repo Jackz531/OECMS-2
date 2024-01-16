@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(express.static(path.join(__dirname, 'views')));
 
 router.use(session({
-  secret: 'some random string', 
+  secret: 'afafwgwgwgteyegmnSLfghw;rjawvl;mwa', 
   saveUninitialized: false,
   resave:false,
   cookie: {
@@ -110,7 +110,8 @@ router.get('/prof_tt', async (req, res) => {
     const schedule=await db.get_prof_tt(prof_id);
     const scheduleTable = scheduleToHtmlTable(schedule);
     const filePath = path.join(__dirname, 'views', 'prof_tt.html');
-
+    const courses= await db.getcourse_prof(prof_id);
+    const courseTable =  coursesToHtmlTable(courses);
     fs.readFile(filePath, 'utf8', (err, data) => {
       if (err) {
         console.error('Error reading HTML file:', err);
@@ -120,6 +121,8 @@ router.get('/prof_tt', async (req, res) => {
       <script>
         var scheduleBody = document.getElementById('scheduleBody');
         scheduleBody.innerHTML = ${JSON.stringify(scheduleTable)};
+        var coursesTable = document.getElementById('course');
+        coursesTable.innerHTML = ${JSON.stringify(courseTable)};
       </script>
     `;
     const modifiedHtml = data.replace('</body>', injectedData + '</body>');
@@ -308,9 +311,6 @@ router.get('/deschedule', async (req, res) => {
 router.post('/deschedule', async (req, res) => {
   const prof_id = req.session.user.prof_id;
   const slot = req.body.courseIds;
-  
-  
-
   try {
         let i = 0;
         while (i < slot.length) {
@@ -386,6 +386,19 @@ function scheduleToHtmlTable(schedule) {
   return `<table id="scheduleTable"><tbody>${tableRows.join('')}</tbody></table>`;
 }
 
+
+function coursesToHtmlTable(courses) {
+  let tableRows = '';
+
+  for (let i = 0; i < courses.length; i++) {
+    const course = courses[i];
+    tableRows += `<tr><td class="t3">${course.course_id}</td><td class="t3">${course.course_name}</td></tr>`;
+  }
+
+  return `<table id="courseTable"><tbody>${tableRows}</tbody></table>`;
+}
+
+
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -405,6 +418,7 @@ function injectBatchData(html, batch) {
   const modifiedHTML = html.replace(placeholder, options.join(''));
   return modifiedHTML;
 }
+
 
 module.exports = router;
 

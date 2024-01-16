@@ -40,10 +40,11 @@ async function getStudentSchedule(student) {
   }
 }
 
-// async function getcourseinfo(student)
-// {
-  
-// }
+async function getcourseinfo(student)
+{
+  const course=await db.all('select c.course_id, c.course_name from course as c,enrolments as e where c.course_id = e.course_id and e.roll_no = ?',[student.rollNo]);
+  return course;
+}
 
 async function getcourse_prof(prof_id)
 {
@@ -130,11 +131,6 @@ async function checkbookings(choice,prof_id)
   const slot_id2=choice.end;
 
   const obj1=await db.all('SELECT * FROM weeklytable WHERE day=? and slot_id>=? and slot_id<=? and prof_id=?',[choice.day,slot_id1,slot_id2,prof_id]);
-  // console.log(choice);
-  // console.log(slot_id1);
-  // console.log(slot_id2);
-  // console.log(obj1);
-  // console.log("obj1 length"+obj1.length);
   if(obj1.length != 0)
     {
       return 1;
@@ -157,12 +153,7 @@ async function checkbookings(choice,prof_id)
 }
 async function get_clashes(choice)
 {
-  // console.log("batch is "+choice.batch);
-  // console.log("start is "+choice.start);
-  // console.log("end is "+choice.end);
   const ans1 = await db.all("select s.roll_no, s.first_name, s.second_name from student as s, enrolments as e where e.roll_no = s.roll_no and e.course_id = ? and s.batch_id = case when ? = 0 then s.batch_id else ? end;", [choice.course, choice.batch.length, choice.batch]);
- 
- 
   const ans2 = await db.all(`
     SELECT s.roll_no, s.first_name, s.second_name
     FROM student AS s
@@ -194,7 +185,6 @@ return [ans2,ans1];
 }
 
 async function update_dbdata(obj, prof_id) {
-  // console.log(obj);
   if (obj.batch.length > 0) {
     if (obj.end - obj.start === 1) {
       await db.all("INSERT INTO weeklytable(day, slot_id, batch_id, course_id, prof_id, room_id) VALUES (?, ?, ?, ?, ?, ?)",
@@ -241,5 +231,6 @@ module.exports =
     get_clashes,
     update_dbdata,
     delete_dbdata,
+    getcourseinfo,
 };
 

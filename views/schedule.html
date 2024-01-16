@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="bg2.css">
-    <link rel="stylesheet" href="schedulestylesheet.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="bg2.css"> -->
+    <link rel="stylesheet" href="ttinschedule.css">
+    <link rel="stylesheet" href="schedulestylesheet.css">
   
     <title>Book Slots</title>
 </head>
 
 <body>
-    <nav><a href="/professor/profile"><button>Go back</button></a></nav>
-    <div class="logo"><span><img src="Nitc_logo.png"> </span></div>
-
-    <form id="bookingForm" action="/professor/confirmation" method="post" >
-        <div class="new">
+    <nav>
+        <ul>
+          <li><a href='/professor/profile'> &laquo Back</a></li>
+         </ul>
+       </nav>
+       <div class="logo"><span><img src="Nitc_logo.png"> </span></div>
+         <form id="bookingForm" action="/professor/confirmation" method="post" >
+        <div class="neww">
             <label for="" name="day">
                 <!--Day:-->
                 <div class="custom-select box1">
@@ -29,7 +33,7 @@
                     </select>
                 </div>
             </label>
-        
+        <br>
             <label for="">
                 <!--Classroom:-->
                 <div class="custom-select box2">
@@ -123,21 +127,10 @@
                     </select>
                 </div>
             </label>
-            <script>
-                // Script for Custom Dropdowns
-                // ...
-
-            </script>
-            <br>
-            <!-- Error 5 Display -->
-            
-            <br>
-        </div>
-        <style>
-           
+   
           
-        </style>
-        <!-- Table for Displaying Schedule -->
+        </div>
+       
         <center>
             <justify>
                 <center><justify><table id="scheduleTable">
